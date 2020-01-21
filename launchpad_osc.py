@@ -1,25 +1,38 @@
 import ardour
 import time
 import midi_device as midi
+from enum import IntEnum
 
 strips = {}
 
-def mute_strip( id, value ):
-	print( f"mute {id}" )
+class strip_button( IntEnum ):
+	rec = 0,
+	mute = 1
 
-events = {
+def toggle_strip_rec( id, value ):
+	print( f"rec {id}:{value}" )
+	midi.set_led( strip_button.rec, id, midi.color.red_full if value else midi.color.red_low )
+
+def mute_strip( id, value ):
+	print( f"mute {id}:{value}" )
+	midi.set_led( strip_button.mute, id, midi.color.red_full if value else midi.color.red_low )
+
+ardour_events = {
+	"recenable": toggle_strip_rec,
 	"mute": mute_strip
 }
 
 def handle_strip_event( id, verb, value ):
 	print( f"strip {id} {verb}: {value}" )
 
-	if verb in events:
-		events[ verb ]( id, value ) 
-	# midi.set_led
+	if verb in ardour_events:
+		ardour_events[ verb ]( id, value ) 
 
 def clear_row( row ):
 	print( f"clearing row {row}" )
+	
+	for i in range( 9 ):
+		midi.set_led( i, row, midi.color.off )
 
 def strip_list_updated( updated_strips ):
 	global strips
@@ -37,6 +50,9 @@ def strip_list_updated( updated_strips ):
 		# print( f"strip {i}: {strips[key]['name']}" )
 
 try:
+	for row in range( 10 ):
+		clear_row( row ) 
+
 	ardour.update_strip_list = strip_list_updated
 	ardour.strip_event_handler = handle_strip_event
 
@@ -50,7 +66,6 @@ except KeyboardInterrupt:
 
 finally: 
 	ardour.terminate()
-	midi_device.terminate()
+	midi.terminate()
 
 print( 'done' )
-# 	print( 'done' )

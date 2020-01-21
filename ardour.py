@@ -23,6 +23,7 @@ def send( path, *argv ):
 		msg = oscbuildparse.OSCMessage( path, *argv )
 	else:
 		msg = oscbuildparse.OSCMessage( path, None, [] )
+
 	osc_send( msg, "ardour" )
 
 def process():
@@ -52,7 +53,7 @@ def handle_strip( address, s, args ):
 	match = re.match( r"^/strip/(.+)/(\d+)$", address )
 
 	if match:
-		id = match.group( 2 )
+		id = int( match.group( 2 ) ) - 1
 		verb = match.group( 1 )
 
 		if strip_event_handler:
@@ -88,48 +89,3 @@ osc_method( "/reply", handle_reply, argscheme=osm.OSCARG_MESSAGEUNPACK )
 
 send( "/set_surface", None, [ 0, 159, 16391, 0, 0, 0 ] )
 send( "/strip/list" )
-
-class Ardour:
-
-	client = None
-	server = None
-	dispatcher = None
-
-	def __init__(self):
-		super().__init__()
-		# self.dispatcher.map( "/strip/list", handle_strips, self )
-
-	# def setup_osc(self):
-		# self.client = SimpleUDPClient( self.ip, self.connect_port )
-		# self.client.send_message( "/set_surface/strip_types", 1 )
-		# self.client.send_message( "/set_surface", [ 0, 0, 0, 0, 0, 0 ] )
-
-	def query_state(self):
-		msg = oscbuildparse.OSCMessage( "/strip/list" )
-		osc_send( msg, "ardour" )
-		# self.client.send_message( "/strip/list", [] )
-
-	# def play(self):
-		# self.client.send_message( "/transport_play", [] )
-
-	# def stop(self):
-		# self.client.send_message( "/transport_stop", [] )
-
-# async def start_server( instance, loop ):
-# 	print( 'starting osc server' )
-
-# 	dispatcher = Dispatcher()
-# 	dispatcher.set_default_handler( handle_default, instance )
-
-# 	server = AsyncIOOSCUDPServer( (instance.ip, instance.listen_port), dispatcher, asyncio.get_event_loop() )
-# 	transport, protocol = await server.create_serve_endpoint()
-
-# 	instance.setup_osc()
-	
-# 	await loop( instance )
-	
-# 	transport.close()
-	
-# 	print( 'closing osc server' )
-
-# client.send_message("/some/address", [1, 2., "hello"])  # Send message with int, float and string
