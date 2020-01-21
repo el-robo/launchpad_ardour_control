@@ -5,17 +5,26 @@ import math
 import time
 from enum import IntEnum
 
+button_handler = None
+cc_handler = None
+
 input = rtmidi.MidiIn()
 output = rtmidi.MidiOut()
 
 def handle_button( index, value ):
 	column = index % 0x10
 	row = math.floor( (index - column) / 0x10 )
-	print( f"button {column}x{row}: {value}" )
+
+	if button_handler:
+		button_handler( column, row, value )
+	# print( f"button {column}x{row}: {value}" )
 
 def handle_cc( index, value ):
 	column = index - 104
-	print( f"cc {column}: {value}" )
+
+	if button_handler:
+		button_handler( column, row, value )
+	# print( f"cc {column}: {value}" )
 
 midi_handlers = {
 	144: handle_button,
@@ -44,7 +53,6 @@ def open_launchpad( device ):
 		raise Exception( 'no Launchpad input device found' )
 
 	device.open_port( matching_port[0] )
-
 
 open_launchpad( input )
 open_launchpad( output )
@@ -76,7 +84,6 @@ def set_led( column, row, value ):
 	output.send_message( [ 0x90, 0x10 * int(row) + int(column), int(value) ] )
 
 def clear_row( row ):
-	print( f"clearing row {row}" )
 	
 	for i in range( 9 ):
 		set_led( i, row, color.off )
