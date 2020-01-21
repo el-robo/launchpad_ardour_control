@@ -2,6 +2,7 @@ import ardour
 import time
 import midi_device as midi
 from enum import IntEnum
+from functools import partial
 
 class cc_button( IntEnum ):
 	rec = 0,
@@ -64,21 +65,18 @@ midi.button_handler = handle_button
 #######################
 # ardour event handlers
 
+button_colors = {
+	strip_button.rec: [ midi.color.red_low, midi.color.red_full ],
+	strip_button.mute: [ midi.color.amber_low, midi.color.amber_full ],
+	strip_button.solo: [ midi.color.green_low, midi.color.green_full ]
+}
+
 def rec( value ):
 	store_cc_state( cc_button.rec, value )
-	midd.set
 
-def strip_rec( id, value ):
-	store_button_state( strip_button.rec, id, value )
-	midi.set_led( strip_button.rec, id, midi.color.red_full if value else midi.color.red_low )
-
-def strip_mute( id, value ):
-	store_button_state( strip_button.mute, id, value )
-	midi.set_led( strip_button.mute, id, midi.color.yellow if value else midi.color.off )
-
-def strip_solo( id, value ):
-	store_button_state( strip_button.solo, id, value )
-	midi.set_led( strip_button.solo, id, midi.color.green_full if value else midi.color.off )
+def set_strip_led( type, id, value ):
+	store_button_state( type, id, value )
+	midi.set_led( type, id, button_colors[ type ][ 1 ] if value else button_colors[ type ][ 0 ] )
 
 def strip_count( count ):
 
@@ -90,10 +88,10 @@ def strip_count( count ):
 			if key in button_state: 
 				del( button_state[ key ] )
 
-ardour.strip_events = {
-	"recenable": strip_rec,
-	"mute": strip_mute,
-	"solo": strip_solo,
+ardour.strip_events = { 
+	"recenable": partial( set_strip_led, strip_button.rec ),
+	"mute": partial( set_strip_led, strip_button.mute ),
+	"solo": partial( set_strip_led, strip_button.solo ),
 	"strip_count": strip_count
 }
 
