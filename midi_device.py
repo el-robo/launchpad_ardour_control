@@ -51,17 +51,6 @@ open_launchpad( output )
 
 input.set_callback( MidiInputHandler( 'launchpad' ) )
 
-def terminate():
-	global input
-	input.close_port()
-	del input
-
-def set_led( column, row, value ):
-	global output
-	# print( f"led {column}x{row}: {value:x}" )
-	output.send_message( [ 0x90, 0x10 * int(row) + int(column), int(value) ] )
-
-
 class color( IntEnum ):
 	off 			= 0x0C,
 	red_low 		= 0x0D,
@@ -75,3 +64,22 @@ class color( IntEnum ):
 	green_low		= 0x1C,
 	green_full		= 0x3C,
 	green_flash		= 0x38
+
+def terminate():
+	global input
+	input.close_port()
+	del input
+
+def set_led( column, row, value ):
+	global output
+	# print( f"led {column}x{row}: {value:x}" )
+	output.send_message( [ 0x90, 0x10 * int(row) + int(column), int(value) ] )
+
+def clear_row( row ):
+	print( f"clearing row {row}" )
+	
+	for i in range( 9 ):
+		set_led( i, row, color.off )
+
+for row in range( 10 ):
+	clear_row( row ) 

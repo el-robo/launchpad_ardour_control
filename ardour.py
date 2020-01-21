@@ -15,6 +15,7 @@ strip_event_handler = None
 
 strip_list = None
 next_strip_list = {}
+strip_events = {}
 
 def send( path, *argv ):
 	msg = None
@@ -41,8 +42,14 @@ def swap_strip_list():
 	strip_list = next_strip_list
 	next_strip_list = {}
 		
-	if update_strip_list:
-		update_strip_list( strip_list )
+	if "strip_count" in strip_events:
+		strip_events[ "strip_count" ]( len( strip_list ) )
+
+def handle_strip_event( id, verb, value ):
+	print( f"strip {id} {verb}: {value}" )
+
+	if verb in strip_events:
+		strip_events[ verb ]( id, value ) 
 
 def handle_strip( address, s, args ):
 	
@@ -55,10 +62,7 @@ def handle_strip( address, s, args ):
 	if match:
 		id = int( match.group( 2 ) ) - 1
 		verb = match.group( 1 )
-
-		if strip_event_handler:
-			strip_event_handler( id, verb, args[0] )
-		# print( f"{id} {verb}: {args[0]}")
+		handle_strip_event( id, verb, args[0] )
 
 		if not id in next_strip_list:
 			next_strip_list[ id ] = {}
