@@ -21,8 +21,8 @@ def handle_button( index, value ):
 def handle_cc( index, value ):
 	column = index - 104
 
-	if button_handler:
-		button_handler( column, row, value )
+	if cc_handler:
+		cc_handler( column, value )
 
 midi_handlers = {
 	144: handle_button,
@@ -82,5 +82,8 @@ def clear_row( row ):
 	for i in range( 9 ):
 		set_led( i, row, color.off )
 
-for row in range( 10 ):
-	clear_row( row ) 
+def reset():
+	global output
+	output.send_message( [ 0xB0, 0x00, 0x00 ] )
+
+reset()

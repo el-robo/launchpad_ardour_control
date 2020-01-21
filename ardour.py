@@ -80,6 +80,15 @@ def handle_reply( address, s, args ):
 	if len(args) and args[ 0 ] == 'end_route_list':
 		swap_strip_list()
 
+def toggle_rec():
+	send( "/rec_enable_toggle" )
+
+def start():
+	send( "/transport_play" )
+
+def stop():
+	send( "/transport_stop" )
+
 def toggle_strip_rec( strip, value ):
 	send( f"/strip/recenable/{strip+1}", None, [ value ] )
 

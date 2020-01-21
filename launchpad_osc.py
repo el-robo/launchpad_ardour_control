@@ -3,6 +3,16 @@ import time
 import midi_device as midi
 from enum import IntEnum
 
+class cc_button( IntEnum ):
+	rec = 0,
+	stop = 2,
+	start = 3
+
+class strip_button( IntEnum ):
+	rec = 0,
+	mute = 1,
+	solo = 2
+
 current_strip_count = 0
 button_state = {}
 
@@ -20,16 +30,19 @@ def toggle_button_state( column, row ):
 
 	return button_state[ key ]
 
-class strip_button( IntEnum ):
-	rec = 0,
-	mute = 1,
-	solo = 2
-
 #####################
 # midi event handlers
 
-def handle_cc( column, row, value ):
-	pass
+cc_handlers = {
+	int( cc_button.rec ): ardour.toggle_rec,
+	int( cc_button.stop ): ardour.stop,
+	int( cc_button.start ): ardour.start
+}
+
+def handle_cc( column, value ):
+
+	if column in cc_handlers and value:
+		cc_handlers[ column ]()
 
 strip_handlers = {
 	int( strip_button.rec ): ardour.toggle_strip_rec,
@@ -50,6 +63,10 @@ midi.button_handler = handle_button
 
 #######################
 # ardour event handlers
+
+def rec( value ):
+	store_cc_state( cc_button.rec, value )
+	midd.set
 
 def strip_rec( id, value ):
 	store_button_state( strip_button.rec, id, value )
