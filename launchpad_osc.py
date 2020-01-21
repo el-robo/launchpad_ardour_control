@@ -32,9 +32,9 @@ def handle_cc( column, row, value ):
 	pass
 
 strip_handlers = {
-	int( strip_button.rec ): ardour.toggle_rec,
-	int( strip_button.mute ): ardour.toggle_mute,
-	int( strip_button.solo ): ardour.toggle_solo
+	int( strip_button.rec ): ardour.toggle_strip_rec,
+	int( strip_button.mute ): ardour.toggle_strip_mute,
+	int( strip_button.solo ): ardour.toggle_strip_solo
 }
 
 def handle_button( column, row, value ):
@@ -52,17 +52,14 @@ midi.button_handler = handle_button
 # ardour event handlers
 
 def strip_rec( id, value ):
-	print( f"rec {id}:{value}" )
 	store_button_state( strip_button.rec, id, value )
 	midi.set_led( strip_button.rec, id, midi.color.red_full if value else midi.color.red_low )
 
 def strip_mute( id, value ):
-	print( f"mute {id}:{value}" )
 	store_button_state( strip_button.mute, id, value )
 	midi.set_led( strip_button.mute, id, midi.color.yellow if value else midi.color.off )
 
 def strip_solo( id, value ):
-	print( f"solo {id}:{value}" )
 	store_button_state( strip_button.solo, id, value )
 	midi.set_led( strip_button.solo, id, midi.color.green_full if value else midi.color.off )
 
@@ -72,7 +69,9 @@ def strip_count( count ):
 		midi.clear_row( row )
 		
 		for column in range( 10 ):
-			del( button_state[ (column,row) ] )
+			key = (column,row)
+			if key in button_state: 
+				del( button_state[ key ] )
 
 ardour.strip_events = {
 	"recenable": strip_rec,

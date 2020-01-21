@@ -17,14 +17,12 @@ def handle_button( index, value ):
 
 	if button_handler:
 		button_handler( column, row, value )
-	# print( f"button {column}x{row}: {value}" )
 
 def handle_cc( index, value ):
 	column = index - 104
 
 	if button_handler:
 		button_handler( column, row, value )
-	# print( f"cc {column}: {value}" )
 
 midi_handlers = {
 	144: handle_button,
@@ -43,9 +41,6 @@ class MidiInputHandler(object):
 
 def open_launchpad( device ):
 	ports = device.get_ports()
-
-	for idx,key in enumerate( ports ):
-		print( key )
 
 	matching_port = [ idx for idx,key in enumerate( ports ) if key.startswith( 'Launchpad' ) ]
 
@@ -80,7 +75,6 @@ def terminate():
 
 def set_led( column, row, value ):
 	global output
-	# print( f"led {column}x{row}: {value:x}" )
 	output.send_message( [ 0x90, 0x10 * int(row) + int(column), int(value) ] )
 
 def clear_row( row ):

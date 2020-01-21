@@ -46,7 +46,6 @@ def swap_strip_list():
 		strip_events[ "strip_count" ]( len( strip_list ) )
 
 def handle_strip_event( id, verb, value ):
-	print( f"strip {id} {verb}: {value}" )
 
 	if verb in strip_events:
 		strip_events[ verb ]( id, value ) 
@@ -81,13 +80,13 @@ def handle_reply( address, s, args ):
 	if len(args) and args[ 0 ] == 'end_route_list':
 		swap_strip_list()
 
-def toggle_rec( strip, value ):
+def toggle_strip_rec( strip, value ):
 	send( f"/strip/recenable/{strip+1}", None, [ value ] )
 
-def toggle_mute( strip, value ):
+def toggle_strip_mute( strip, value ):
 	send( f"/strip/mute/{strip+1}", None, [ value ] )
 
-def toggle_solo( strip, value ):
+def toggle_strip_solo( strip, value ):
 	send( f"/strip/solo/{strip+1}", None, [ value ] )
 
 ip = "127.0.0.1"
