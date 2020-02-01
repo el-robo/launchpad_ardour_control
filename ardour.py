@@ -83,6 +83,9 @@ def handle_reply( address, s, args ):
 def toggle_rec():
 	send( "/rec_enable_toggle" )
 
+def toggle_click():
+	send( "/toggle_click" )
+
 def start():
 	send( "/transport_play" )
 

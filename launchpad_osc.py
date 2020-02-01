@@ -6,6 +6,7 @@ from functools import partial
 
 class cc_button( IntEnum ):
 	rec = 0,
+	click = 1,
 	stop = 2,
 	start = 3
 
@@ -36,6 +37,7 @@ def toggle_button_state( column, row ):
 
 cc_handlers = {
 	int( cc_button.rec ): ardour.toggle_rec,
+	int( cc_button.click ): ardour.toggle_click,
 	int( cc_button.stop ): ardour.stop,
 	int( cc_button.start ): ardour.start
 }
