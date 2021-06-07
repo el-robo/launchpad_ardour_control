@@ -50,11 +50,11 @@ def open_launchpad( device ):
 
     device.open_port( matching_port[0] )
 
-print( "opening device" )
-open_launchpad( input )
-open_launchpad( output )
-
-input.set_callback( MidiInputHandler( 'launchpad' ) )
+def start():
+    print( "opening device" )
+    open_launchpad( input )
+    open_launchpad( output )
+    input.set_callback( MidiInputHandler( 'launchpad' ) )
 
 class color( IntEnum ):
     off 			= 0x0C,
@@ -75,9 +75,15 @@ def terminate():
     input.close_port()
     del input
 
+    global output
+    output.close_port()
+    del output    
+
 def set_led( column, row, value ):
     global output
-    output.send_message( [ 0x90, 0x10 * int(row) + int(column), int(value) ] )
+
+    command = [ 0x90, 0x10 * int(row) + int(column), int(value) ]
+    output.send_message( command )
 
 def clear_row( row ):
     
@@ -87,5 +93,3 @@ def clear_row( row ):
 def reset():
     global output
     output.send_message( [ 0xB0, 0x00, 0x00 ] )
-
-reset()
